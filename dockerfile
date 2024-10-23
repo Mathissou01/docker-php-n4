@@ -7,7 +7,6 @@ RUN docker-php-ext-install \
         ctype \
         fileinfo \
         mbstring \
-        pdo_mysql \
         xml
 
 # Installation dans votre image de Composer
