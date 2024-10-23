@@ -7,6 +7,7 @@ ARG DB_PORT
 ARG DB_DATABASE
 ARG DB_USERNAME
 ARG DB_PASSWORD
+ARG DB_URL
 
 # Installation dans votre Image du minimum pour que Docker fonctionnegfgfgfgf
 RUN apk add oniguruma-dev libxml2-dev
@@ -35,6 +36,7 @@ ENV DB_PORT $DB_PORT
 ENV DB_DATABASE $DB_DATABASE
 ENV DB_USERNAME $DB_USERNAME
 ENV DB_PASSWORD $DB_PASSWORD
+ENV DB_URL $DB_URL
 
 WORKDIR /app
 COPY . .
