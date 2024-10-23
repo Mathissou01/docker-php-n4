@@ -48,7 +48,7 @@ COPY . .
 RUN cp -n .env.example .env
 
 # Génération de la clé d'application Laravel et mise à jour du fichier .env
-RUN php artisan key:generate --force
+RUN php artisan key:generate
 
 # Installation des dépendances PHP avec Composer en mode production
 RUN composer install --no-interaction --optimize-autoloader --no-dev
