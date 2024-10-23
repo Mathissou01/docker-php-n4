@@ -1,6 +1,14 @@
 FROM webdevops/php-nginx:8.3-alpine
 
-# Installation dans votre Image du minimum pour que Docker fonctionne
+# Retrieve variables
+ARG DB_CONNECTION
+ARG DB_HOST
+ARG DB_PORT
+ARG DB_DATABASE
+ARG DB_USERNAME
+ARG DB_PASSWORD
+
+# Installation dans votre Image du minimum pour que Docker fonctionnegfgfgfgf
 RUN apk add oniguruma-dev libxml2-dev
 RUN docker-php-ext-install \
         bcmath \
@@ -17,6 +25,17 @@ RUN apk add nodejs npm
 
 ENV WEB_DOCUMENT_ROOT /app/public
 ENV APP_ENV production
+
+ENV APP_ENV production
+ENV APP_ENV production
+
+ENV DB_CONNECTION $DB_CONNECTION
+ENV DB_HOST $DB_HOST
+ENV DB_PORT $DB_PORT
+ENV DB_DATABASE $DB_DATABASE
+ENV DB_USERNAME $DB_USERNAME
+ENV DB_PASSWORD $DB_PASSWORD
+
 WORKDIR /app
 COPY . .
 
