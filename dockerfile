@@ -1,6 +1,7 @@
+# Utilisation de l'image de base PHP avec Nginx
 FROM webdevops/php-nginx:8.3-alpine
 
-# Retrieve variables
+# Déclaration des variables d'argument pour la base de données
 ARG DB_CONNECTION
 ARG DB_HOST
 ARG DB_PORT
@@ -9,56 +10,57 @@ ARG DB_USERNAME
 ARG DB_PASSWORD
 ARG DB_URL
 
-# Installation dans votre Image du minimum pour que Docker fonctionnegfgfgfgf
-RUN apk add oniguruma-dev libxml2-dev
-RUN docker-php-ext-install \
+# Installation des dépendances nécessaires pour PHP
+RUN apk add --no-cache oniguruma-dev libxml2-dev \
+    && docker-php-ext-install \
         bcmath \
         ctype \
         fileinfo \
         mbstring \
         xml
 
-# Installation dans votre image de Composer
+# Installation de Composer à partir d'une image existante
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Installation dans votre image de NodeJS
-RUN apk add nodejs npm
+# Installation de NodeJS et npm
+RUN apk add --no-cache nodejs npm
 
+# Définition des variables d'environnement pour le serveur web
 ENV WEB_DOCUMENT_ROOT /app/public
 ENV APP_ENV production
 
-ENV APP_ENV production
-ENV APP_ENV production
+# Définition des variables d'environnement pour la base de données
+ENV DB_CONNECTION=$DB_CONNECTION
+ENV DB_HOST=$DB_HOST
+ENV DB_PORT=$DB_PORT
+ENV DB_DATABASE=$DB_DATABASE
+ENV DB_USERNAME=$DB_USERNAME
+ENV DB_PASSWORD=$DB_PASSWORD
+ENV DB_URL=$DB_URL
 
-ENV DB_CONNECTION $DB_CONNECTION
-ENV DB_HOST $DB_HOST
-ENV DB_PORT $DB_PORT
-ENV DB_DATABASE $DB_DATABASE
-ENV DB_USERNAME $DB_USERNAME
-ENV DB_PASSWORD $DB_PASSWORD
-ENV DB_URL $DB_URL
-
+# Définition du répertoire de travail
 WORKDIR /app
+
+# Copie du code source dans le conteneur
 COPY . .
 
-# On copie le fichier .env.example pour le renommer en .env
-# Vous pouvez modifier le .env.example pour indiquer la configuration de votre site pour la production
+# Copie du fichier .env.example vers .env si .env n'existe pas
 RUN cp -n .env.example .env
 
-# Installation et configuration de votre site pour la production
-# https://laravel.com/docs/10.x/deployment#optimizing-configuration-loading
+# Installation des dépendances PHP avec Composer en mode production
 RUN composer install --no-interaction --optimize-autoloader --no-dev
-# Generate security key
+
+# Génération de la clé d'application Laravel
 RUN php artisan key:generate
-# Optimizing Configuration loading
+
+# Optimisation des configurations, routes et vues pour le déploiement
 RUN php artisan config:cache
-# Optimizing Route loading
 RUN php artisan route:cache
-# Optimizing View loading
 RUN php artisan view:cache
 
-# Compilation des assets de Breeze (ou de votre site)
+# Installation et compilation des assets front-end avec npm
 RUN npm install
 RUN npm run build
 
-RUN chown -R application:application .
+# Attribution des permissions correctes à l'utilisateur 'application'
+RUN chown -R application:application /app
